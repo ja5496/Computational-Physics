@@ -27,7 +27,7 @@ x2 = np.float32(10.0)
 f1 = np.cos
 f2 = np.exp
 
-h = np.logspace(-8, 1, 40).astype(np.float32) #Range of h values to test
+h = np.logspace(-8, 1, 100).astype(np.float32) #Range of h values to test
 
 print('forward diff e^x derivative of e^x at x=10', forward_diff(np.exp, x2, np.float32(1.0e-5)))
 print('actual derivative of e^x at x=10', np.exp(x2))
