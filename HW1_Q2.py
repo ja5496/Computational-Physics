@@ -1,71 +1,91 @@
-#Python file to solve the numerical integration problem from HW1 Q2
+# Python file to solve the numerical integration problem from HW1 Q2
 import numpy as np
 import matplotlib.pyplot as plt
 
-'''
-A) First define integration functions. Use midpoint rule, trapezoidal rule, and Simpson's rule 
-to compute the integral of each function from 0 to 1.
+# Shorthand for making things into single precision because I will have to do it a lot
+f32 = np.float32
 
-'''
-
+# Define my integration rules
 def midpoint_rule(f, a, b, N):
-    print('Running midpoint rule with N =', N)
-    width = (b - a) / N
-    integral = 0.0
+    a = f32(a); b = f32(b)
+    width = (b - a) / f32(N)
+    integral = f32(0.0)
     for i in range(N):
-        x_mid = a + (i + 0.5) * width
-        integral += f(x_mid).astype(np.float32)
-    integral *= width
-    return integral.astype(np.float32)
+        x_mid = a + (f32(i) + f32(0.5)) * width
+        integral = f32(integral + f(x_mid))
+    return f32(integral * width)
 
 def trapezoidal_rule(f, a, b, N):
-    print('Running trapezoidal rule with N =', N)
-    width = (b - a) / N
-    integral = 0.5 * (f(a) + f(b))
+    a = f32(a); b = f32(b)
+    width = (b - a) / f32(N)
+    integral = f32(0.5) * f32(f(a) + f(b))
     for i in range(1, N):
-        x_i = a + i * width
-        integral += f(x_i).astype(np.float32)
-    integral *= width
-    return integral.astype(np.float32)
+        x_i = a + f32(i) * width
+        integral = f32(integral + f(x_i))
+    return f32(integral * width)
 
 def simpsons_rule(f, a, b, N):
-    print("Running Simpson's rule with N =", N)
+    a = f32(a); b = f32(b)
     if N % 2 == 1:
-        N += 1  # Simpson's rule requires an even number of intervals
-    width = (b - a) / N
-    integral = f(a) + f(b)
+        N += 1  # Simpson's rule requires even N
+    width = (b - a) / f32(N)
+    integral = f32(f(a) + f(b))
+    four = f32(4.0); two = f32(2.0)
     for i in range(1, N, 2):
-        x_i = a + i * width
-        integral += 4 * f(x_i).astype(np.float32)
-    for i in range(2, N-1, 2):
-        x_i = a + i * width
-        integral += 2 * f(x_i).astype(np.float32)
-    integral *= width / 3
-    return integral.astype(np.float32)
+        x_i = a + f32(i) * width
+        integral = f32(integral + four * f(x_i))
+    for i in range(2, N - 1, 2):
+        x_i = a + f32(i) * width
+        integral = f32(integral + two * f(x_i))
+    return f32(integral * (width * f32(1.0/3.0)))
 
-#Define parameters and functions to be used in the integration
-x0, x1 = np.float32(0.0), np.float32(1.0)
-N = np.logspace(0, 4, 100).astype(int) #Number of intervals to test
-def func(x):
-    return np.exp(-x).astype(np.float32)
+# Bounds of Integration
+x0, x1 = f32(0.0), f32(1.0)
 
-vec_midpoint_rule = np.vectorize(midpoint_rule, excluded=['f', 'a', 'b'])
-vec_trapezoidal_rule = np.vectorize(trapezoidal_rule, excluded=['f', 'a', 'b'])
-vec_simpsons_rule = np.vectorize(simpsons_rule, excluded=['f', 'a', 'b'])
-#Compute arrays of errors for each method:
-real_val = (1-np.exp(-1)).astype(np.float32)
-err_mid = (np.abs(vec_midpoint_rule(func, x0, x1, N) - real_val)/(real_val))
-err_trap = (np.abs(vec_trapezoidal_rule(func, x0, x1, N) - real_val)/(real_val))
-err_simp = (np.abs(vec_simpsons_rule(func, x0, x1, N) - real_val)/(real_val))
+# N values from 0 to 10^7 to reach machine precision for bin sizes to see both truncation and roundoff regimes
+N_values = np.unique(np.logspace(0, 7, 100).astype(int))  
 
-#Part B: Plot the errors for each method on a log-log scale:
+# define the integrand e^{-t} in float32
+def integrand(x_f32):
+    # we pass x already as float32; compute exp(-x) in float32
+    return np.exp(-f32(x_f32)).astype(np.float32)
+
+# exact analytic solution to the integral fro calculating the error
+real_val = f32(1.0) - np.exp(f32(-1.0)).astype(np.float32)
+
+# Compute errors by looping over N 
+err_mid, err_trap, err_simp = [], [], []
+for N in N_values:
+    print("Evaluating at N = ", N)
+    I_mid  = midpoint_rule(integrand, x0, x1, int(N))
+    I_trap = trapezoidal_rule(integrand, x0, x1, int(N))
+    I_simp = simpsons_rule(integrand, x0, x1, int(N))
+
+    e_mid  = f32(np.abs(f32(I_mid  - real_val)) / real_val)
+    e_trap = f32(np.abs(f32(I_trap - real_val)) / real_val)
+    e_simp = f32(np.abs(f32(I_simp - real_val)) / real_val)
+
+    err_mid.append(e_mid)
+    err_trap.append(e_trap)
+    err_simp.append(e_simp)
+
+err_mid  = np.array(err_mid,  dtype=np.float32)
+err_trap = np.array(err_trap, dtype=np.float32)
+err_simp = np.array(err_simp, dtype=np.float32)
+
+# Now plot finally
 plt.figure(figsize=(10, 8))
-plt.loglog(N, err_mid, label='Midpoint Rule')
-plt.loglog(N, err_trap, label='Trapezoidal Rule')
-plt.loglog(N, err_simp, label="Simpson's Rule")
-plt.title('Numerical Integration of e^(-t)',fontsize=24, fontweight='bold')
-plt.xlabel('Number of Bins (N)',fontsize=20)
-plt.ylabel('Relative Error',fontsize=20)
+plt.loglog(N_values, err_mid,  label='Midpoint')
+plt.loglog(N_values, err_trap, label='Trapezoidal')
+plt.loglog(N_values, err_simp, label="Simpson's")
+plt.loglog(N_values, 1/N_values, linestyle=":", color = 'black')
+plt.loglog(N_values, 1/(N_values**(2)), linestyle=":", color = 'black')
+plt.loglog(N_values, 1/(N_values**(4)), linestyle=":", color = 'black')
+plt.title('Numerical Integration of e^{-t}', fontsize=24, fontweight='bold')
+plt.xlabel('Number of Bins (N)', fontsize=22)
+plt.ylabel('Relative Error', fontsize=22)
+plt.ylim(bottom = 0.5e-7)
+plt.ylim(top = 5e-1)
 plt.legend(fontsize=16)
 plt.grid(True)
 plt.show()
