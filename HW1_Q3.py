@@ -48,14 +48,27 @@ b = 50
 # Compute E(r) 
 r = np.linspace(0.0, 120.0, 1000)
 E_r = np.array([simpsons(integrand, a, b, 3500, ri) for ri in r])
-#E_r_residual = np.array([simpsons(integrand, 50, 100, 3000, ri) for ri in r])
-#E_err = E_r_residual/E_r #Relative error
+E_r_residual = np.array([simpsons(integrand, 50, 100, 3000, ri) for ri in r])
+E_err = E_r_residual/E_r #Relative error
+
+#Plot for Interpolated Power function
+plt.figure(figsize=(8,6))
+plt.loglog(k_data, P_k(k_data), linestyle="-")
+plt.xlabel("Wavenumber (k)", fontsize=20)
+plt.ylabel("P(k)", fontsize=20)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.title("Interpolated P(k)", fontsize=24)
+plt.legend()
+plt.grid(True)
+plt.show()
 
 # Plot for Correlation Function:
 plt.figure(figsize=(8,6))
 plt.plot(r, r**2 * E_r, linestyle="-")
-plt.xlabel("Distance r", fontsize=20)
+plt.xlabel("r [Mpc/h]", fontsize=20)
 plt.ylabel(r"$r^2 E(r)$", fontsize=20)
+plt.axvspan(95, 120, color="red", alpha=0.3, label="BAO Length Scale")
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.title("Correlation Function from Interpolated P(k)", fontsize=24)
@@ -64,8 +77,8 @@ plt.grid(True)
 plt.show()
 
 #Plot For Relative Error Convergence Test:
-'''plt.figure(figsize=(8,6))
-plt.plot(r, E_err, linestyle="-")
+plt.figure(figsize=(8,6))
+plt.plot(k_data, E_err, linestyle="-")
 plt.xlabel("Distance r", fontsize=20)
 plt.ylabel("Relative Error in E(r)", fontsize=20)
 plt.xticks(fontsize=14)
@@ -73,4 +86,4 @@ plt.yticks(fontsize=14)
 plt.title("Relative Error From Doubling Upper Bound", fontsize=24)
 plt.legend()
 plt.grid(True)
-plt.show()'''
+plt.show()

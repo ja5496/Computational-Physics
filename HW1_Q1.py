@@ -125,14 +125,3 @@ plt.grid()
 plt.tight_layout()
 plt.show()
 
-'''
-
-Part C: 
-from looking at the plots, we can see that truncation error occurs to the right of the minimum error point,
-while rounding error occurs to the left of the minimum error point. This is because the truncation error is defined 
-as error due to approximating a mathematical procedure, which becomes more bigger as h increases. Conversely, 
-rounding error increases as h decreases because the difference between f(x+h) and f(x) becomes very small, 
-leading to cancellation error. Also the more jagged behavior on in the roundoff error regime is due to the  
-the lack of significant digits in single precision. (expand more)
-
-'''
