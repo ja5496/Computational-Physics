@@ -41,7 +41,7 @@ def simpsons(f, a, b, N, r):
         s += 2.0 * f(a + i*h, r)
     return s * h / 3.0
 
-# Integration limits
+# Integration limits 
 a = k_data.min()
 b = 50
 
@@ -78,7 +78,7 @@ plt.show()
 
 #Plot For Relative Error Convergence Test:
 plt.figure(figsize=(8,6))
-plt.plot(k_data, E_err, linestyle="-")
+plt.plot(r, E_err, linestyle="-")
 plt.xlabel("Distance r", fontsize=20)
 plt.ylabel("Relative Error in E(r)", fontsize=20)
 plt.xticks(fontsize=14)
