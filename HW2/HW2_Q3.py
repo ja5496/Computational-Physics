@@ -150,13 +150,13 @@ n_vals = [n(i, phi_, M_ , a_) for i in mvals]
 n_vals_i = [n(i, -3.2, 11.5, -0.5) for i in mvals]
 print("Chi^2 Value of Fit = ", chi_squared(-2.607, 11.0, -1.046))
 
-plt.scatter(masses,n_data, marker = 'o')
+plt.errorbar(masses,n_data, yerr=sigma, fmt = 'o', ecolor='black', capsize=5)
 plt.plot(mvals,n_vals_i, linestyle = ':', color = 'blue', label='Initial Guess')
 plt.plot(mvals,n_vals, color = 'red', label = 'Grad Descent Fit')
 plt.xscale('linear') # Set x-axis to logarithmic scale
 plt.yscale('log') # Set y-axis to logarithmic scale (optional)
-plt.xlabel('x', fontsize=20)
-plt.ylabel('y', fontsize=20)
+plt.ylabel('n(M_gal) [1/dex/Volume]', fontsize=20)
+plt.xlabel('log(M_gal) [dex]', fontsize=20)
 plt.title('Chi^2 Fit for Schecter Function', fontsize=24)
 plt.xticks(fontsize=18)
 plt.yticks(fontsize=18)
