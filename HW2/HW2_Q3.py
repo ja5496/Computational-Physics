@@ -157,7 +157,7 @@ plt.xscale('linear') # Set x-axis to logarithmic scale
 plt.yscale('log') # Set y-axis to logarithmic scale (optional)
 plt.ylabel('n(M_gal) [1/dex/Volume]', fontsize=20)
 plt.xlabel('log(M_gal) [dex]', fontsize=20)
-plt.title('Chi^2 Fit for Schecter Function', fontsize=24)
+plt.title('Chi^2 Fit for Schechter Function', fontsize=24)
 plt.xticks(fontsize=18)
 plt.yticks(fontsize=18)
 plt.legend()
