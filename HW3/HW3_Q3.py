@@ -36,5 +36,41 @@ plt.show()
 
 #Part C: Deconvolution function
 
+def deconvolve(blurry_array, gauss_periodic=gauss_periodic):
+    #Calculate the point spread function: 
+    size = len(blurry_array[0])
+    point_spread = np.fromfunction(gauss_periodic, (size, size), dtype=float) 
+
+    s = point_spread.sum()
+    if s != 0:
+        point_spread = point_spread / s
+
+    #Take the fourier transform of both the blurry array and the point spread func
+    blur_fft = np.fft.rfft2(blurry_array)
+    ps_ffts = np.fft.rfft2(point_spread)
+
+    #Divide the blurry fft coeffs by the point spead function fft times (size)^2 to get the unblurred coeffs
+    unblurred_fft = np.empty_like(blur_fft, dtype=blur_fft.dtype)
+    for i, j in np.ndindex(blur_fft.shape):
+        if np.abs(ps_ffts[i, j]) > 1e-6:
+            unblurred_fft[i,j] = blur_fft[i,j]/(ps_ffts[i,j])
+        else: 
+            unblurred_fft[i,j] = blur_fft[i,j]
+
+    #Perform inverse transform to get unblurred array:
+    unblurred_arr = np.fft.irfft2(unblurred_fft)
+
+    #Plot unblurred photo:
+    plt.figure(figsize=(5,5))
+    plt.imshow(unblurred_arr, cmap='gray', aspect='auto')
+    plt.title('Deconvolved Density Plot', fontsize = 20, fontweight='bold')
+    plt.axis('off')
+    plt.show()
+
+
+deconvolve(blurry_array)
+
+
+
 
 
