@@ -52,10 +52,10 @@ def deconvolve(blurry_array, gauss_periodic=gauss_periodic):
     #Divide the blurry fft coeffs by the point spead function fft times (size)^2 to get the unblurred coeffs
     unblurred_fft = np.empty_like(blur_fft, dtype=blur_fft.dtype)
     for i, j in np.ndindex(blur_fft.shape):
-        if np.abs(ps_ffts[i, j]) > 1e-6:
-            unblurred_fft[i,j] = blur_fft[i,j]/(ps_ffts[i,j])
-        else: 
-            unblurred_fft[i,j] = blur_fft[i,j]
+        #if np.abs(ps_ffts[i, j]) > 1e-6:
+        unblurred_fft[i,j] = blur_fft[i,j]/(ps_ffts[i,j]+1e-6)
+        #else: 
+            #unblurred_fft[i,j] = blur_fft[i,j]
 
     #Perform inverse transform to get unblurred array:
     unblurred_arr = np.fft.irfft2(unblurred_fft)
