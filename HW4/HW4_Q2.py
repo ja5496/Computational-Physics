@@ -158,10 +158,7 @@ x = heatmap_data[:, 0]
 y = heatmap_data[:, 1]
 z = heatmap_data[:, 2]
 
-# define grid resolution (increase for smoother heatmap)
 bins = 5
-
-# compute mean z-value in each (x, y) bin
 heatmap, xedges, yedges, _ = plt.hist2d(
     x, y, bins=bins, weights=z, cmap='viridis'
 )
@@ -179,3 +176,25 @@ plt.colorbar(label='Collapse Time')
 plt.xlabel('A', fontsize=18)
 plt.ylabel('B', fontsize=18)
 plt.title('Binary BH Collapse', fontsize=20, fontweight='bold')
+
+
+# part D:
+
+v_0 = circ_speed(1)*np.array([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8])
+v_0 = np.array(v_0)
+Times = []
+
+for v in v_0:
+    print(v)
+    y0 = np.array([1.0, 0.0, 0.0, v]) 
+    T, Y = rk4_adaptive(f2, y0, t_0, t_f, h_0, 1, 1)
+    Times.append(T[-1])
+
+plt.plot(v_0, Times)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.xlabel("Initial Velocity", fontsize=18) 
+plt.ylabel("Time", fontsize=18)
+plt.title("Initial Velocity Dependence", fontsize=22)
+plt.tight_layout()
+plt.show()
