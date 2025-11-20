@@ -51,7 +51,7 @@ def Crank_Nicolson(A, B, psi_0, dt, time_steps):
 print("Running simulation...")
 A, B = matrices(L,N,dt)
 psi_initial = psi_0(L, N, k, x_0, sigma)
-time_steps = 3000 # Number of steps to simulate and animate
+time_steps = 5000 # Number of steps to simulate and animate
 
 # Run the simulation and get the history of psi
 final_psi, psi_memory = Crank_Nicolson(A, B, psi_initial, dt, time_steps)
@@ -112,3 +112,31 @@ plt.grid(True, linestyle='--', alpha=0.6)
 plt.show()
 
 print("Animation window closed.")
+
+#  make 1x3  figure of wavefunction at start, middle, and end -for submission
+
+idx_start = 0
+idx_mid   = len(psi_memory) // 2
+idx_end   = len(psi_memory) - 1
+
+snap_indices = [idx_start, idx_mid, idx_end]
+snap_labels  = [f"t = 0", 
+                f"t = {idx_mid*dt:.2e} s", 
+                f"t = {idx_end*dt:.2e} s"]
+
+fig_snap, axes = plt.subplots(1, 3, figsize=(12, 4), sharey=True)
+
+for ax, idx, label in zip(axes, snap_indices, snap_labels):
+    prob_density = np.abs(psi_memory[idx])**2
+    ax.plot(x_points, prob_density)
+    ax.set_xlim(0, L)
+    ax.set_ylim(0, max_prob * 1.1)
+    ax.set_xlabel("Position (m)")
+    ax.set_title(label)
+
+axes[0].set_ylabel(r"Probability Density $|\psi(x,t)|^2$")
+fig_snap.suptitle("Wave Packet in a Square Well at Selected Times", fontsize=14)
+
+plt.tight_layout()
+plt.savefig("Wavepacket_snapshots.png", dpi=300)
+plt.show()
